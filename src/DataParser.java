@@ -3,12 +3,22 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class DataParser {
-	public static void main(String[] args) throws FileNotFoundException {
-		List<File> fileList = fillFilesToParse();
-		int numDocs = fileList.size();
-		List<String> documentNames = getFileNames();
-		List<LinearProbingHashST<String, Term>> allDocumentStats = new ArrayList<>();
-		LinearProbingHashST<String, Term> docFreq = new LinearProbingHashST<>();
+	private List<File> fileList;
+	private int numDocs;
+	private List<String> documentNames;
+	private List<LinearProbingHashST<String, Term>> allDocumentStats;
+	private LinearProbingHashST<String, Term> docFreq;
+
+	public DataParser(String pathName) throws FileNotFoundException {
+		fileList = fillFilesToParse(pathName);
+		numDocs = fileList.size();
+		documentNames = getFileNames(pathName);
+		allDocumentStats = new ArrayList<>();
+		docFreq = new LinearProbingHashST<>();
+		fillScores();
+	}
+
+	private void fillScores() throws FileNotFoundException {
 		for(File f:fileList){
 			allDocumentStats.add(parseDocument(f, docFreq));
 		}
@@ -24,11 +34,9 @@ public class DataParser {
 				currentStat.TF_IDF_SCORE = currentStat.TF * currentStat.IDF;
 			}
 		}
-
-
 	}
 
-	public static SearchResult Search(String word, List<LinearProbingHashST<String, Term>> allDocumentStats, List<String> documentNames){
+	public SearchResult Search(String word, List<LinearProbingHashST<String, Term>> allDocumentStats, List<String> documentNames){
 		SearchResult result = new SearchResult(word);
 
 		for(int i = 0; i < allDocumentStats.size(); i++){
@@ -42,7 +50,7 @@ public class DataParser {
 		return result;
 	}
 
-	public static PriorityQueue<Term> top10(String document, List<String> documentNames, List<LinearProbingHashST<String, Term>> allDocumentStats){
+	public PriorityQueue<Term> top10(String document, List<String> documentNames, List<LinearProbingHashST<String, Term>> allDocumentStats){
 		int docNumber = 0;
 		for(int i = 0; i < documentNames.size(); i++){
 			if(document.equals(documentNames.get(i))){
@@ -70,19 +78,17 @@ public class DataParser {
 
 	}
 
-
-
-	public static List<File> fillFilesToParse(){
-		File path = new File("./cats/data");
+	private List<File> fillFilesToParse(String pathName){
+		File path = new File(pathName);
 		return new ArrayList<File>(Arrays.asList(path.listFiles()));
 	}
 
-	public static List<String> getFileNames(){
-		File path = new File("./cats/data");
+	private List<String> getFileNames(String pathName){
+		File path = new File(pathName);
 		return new ArrayList<String>(Arrays.asList(path.list()));
 	}
 
-	public static LinearProbingHashST<String, Term> parseDocument(File file, LinearProbingHashST<String, Term> docFreq) throws FileNotFoundException {
+	private LinearProbingHashST<String, Term> parseDocument(File file, LinearProbingHashST<String, Term> docFreq) throws FileNotFoundException {
 		LinearProbingHashST<String, Term> frequencies = new LinearProbingHashST<>();
 		Scanner in = new Scanner(file);
 		while(in.hasNextLine()){
