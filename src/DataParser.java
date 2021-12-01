@@ -9,6 +9,9 @@ public class DataParser {
 	private List<LinearProbingHashST<String, Term>> allDocumentStats;
 	private LinearProbingHashST<String, Term> docFreq;
 
+	private List<BST<String, Term>> allDocumentStatsBST;
+	private BST<String, Term> docFreqBST;
+
 	public DataParser(String pathName) throws FileNotFoundException {
 		fileList = fillFilesToParse(pathName);
 		numDocs = fileList.size();
@@ -118,5 +121,9 @@ public class DataParser {
 		}
 
 		return frequencies;
+	}
+
+	private BST<String, Term> parseDocumentBST(File file, BST<String, Term> docFreqBST){
+		
 	}
 }
