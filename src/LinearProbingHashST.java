@@ -50,4 +50,8 @@ public class LinearProbingHashST<T, U> {
 		return null;
 	}
 
+	public T[] getKeys(){
+		return keys;
+	}
+
 }
