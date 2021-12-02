@@ -21,9 +21,15 @@ public class DataParser {
 		fillScores();
 	}
 
+	public void initBST() throws FileNotFoundException {
+		allDocumentStatsBST = new ArrayList<>();
+		docFreqBST = new BST<>();
+		fillScoresBST();
+	}
+
 	private void fillScores() throws FileNotFoundException {
 		for(File f:fileList){
-			allDocumentStats.add(parseDocument(f, docFreq));
+			allDocumentStats.add(parseDocument(f));
 		}
 
 		for(LinearProbingHashST<String, Term> currentDocTable: allDocumentStats){
@@ -39,7 +45,23 @@ public class DataParser {
 		}
 	}
 
-	public SearchResult Search(String word, List<LinearProbingHashST<String, Term>> allDocumentStats, List<String> documentNames){
+	private void fillScoresBST() throws FileNotFoundException {
+		for(File f:fileList){
+			allDocumentStats.add(parseDocument(f));
+		}
+
+		for(BST<String, Term> currentDocTable: allDocumentStatsBST){
+			Set<String> keys = currentDocTable.getKeys();
+			for(String key: keys){
+				Term currentStat = currentDocTable.get(key);
+				currentStat.TF = Math.log(1 + currentStat.frequency);
+				currentStat.IDF = Math.log( (double) numDocs / docFreq.get(key).frequency);
+				currentStat.TF_IDF_SCORE = currentStat.TF * currentStat.IDF;
+			}
+		}
+	}
+
+	public SearchResult search(String word){
 		SearchResult result = new SearchResult(word);
 
 		for(int i = 0; i < allDocumentStats.size(); i++){
@@ -53,7 +75,20 @@ public class DataParser {
 		return result;
 	}
 
-	public PriorityQueue<Term> top10(String document, List<String> documentNames, List<LinearProbingHashST<String, Term>> allDocumentStats){
+	public SearchResult searchBST(String word){
+		SearchResult result = new SearchResult(word);
+		for(int i = 0; i < allDocumentStatsBST.size(); i++){
+			BST<String, Term> currentDocTable = allDocumentStatsBST.get(i);
+			Term currentStat = currentDocTable.get(word);
+			if(currentStat == null){
+				continue;
+			}
+			result.addTerm(documentNames.get(i), currentStat);
+		}
+		return result;
+	}
+
+	public PriorityQueue<Term> top10(String document){
 		int docNumber = 0;
 		for(int i = 0; i < documentNames.size(); i++){
 			if(document.equals(documentNames.get(i))){
@@ -91,7 +126,7 @@ public class DataParser {
 		return new ArrayList<String>(Arrays.asList(path.list()));
 	}
 
-	private LinearProbingHashST<String, Term> parseDocument(File file, LinearProbingHashST<String, Term> docFreq) throws FileNotFoundException {
+	private LinearProbingHashST<String, Term> parseDocument(File file) throws FileNotFoundException {
 		LinearProbingHashST<String, Term> frequencies = new LinearProbingHashST<>();
 		Scanner in = new Scanner(file);
 		while(in.hasNextLine()){
@@ -123,7 +158,34 @@ public class DataParser {
 		return frequencies;
 	}
 
-	private BST<String, Term> parseDocumentBST(File file, BST<String, Term> docFreqBST){
-		
+	private BST<String, Term> parseDocumentBST(File file) throws FileNotFoundException {
+		BST<String, Term> frequencies = new BST<>();
+		Scanner in = new Scanner(file);
+		while(in.hasNextLine()){
+			String line = in.nextLine();
+			for(String word: line.split("\\s+")){
+				word = word.replaceAll("[^a-zA-Z ]", "");
+				word = word.toLowerCase();
+				if(word.equals("") || word == null){
+					continue;
+				}
+				Term currentStats = frequencies.get(word);
+				if(currentStats != null){
+					currentStats.frequency++;
+					//frequencies.put(word, currentStats);
+				} else {
+					frequencies.put(word, new Term(word, 1));
+				}
+
+				currentStats = docFreqBST.get(word);
+				if(currentStats != null){
+					currentStats.frequency++;
+					//frequencies.put(word, currentStats);
+				} else {
+					docFreqBST.put(word, new Term(word, 1));
+				}
+			}
+		}
+		return frequencies;
 	}
 }

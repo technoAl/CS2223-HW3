@@ -1,5 +1,9 @@
+import java.util.HashSet;
+import java.util.Set;
+
 public class BST  <T extends Comparable<T>, U>{
 	private Node root;
+	private Set<T> keySet = new HashSet<>();
 	private class Node {
 		private T key;
 		private U val;
@@ -44,6 +48,7 @@ public class BST  <T extends Comparable<T>, U>{
 	}
 
 	public void put(T key, U val){
+		keySet.add(key);
 		root =  put(root, key, val);
 	}
 
@@ -61,5 +66,9 @@ public class BST  <T extends Comparable<T>, U>{
 		}
 		node.N = size(node.left) + size(node.right) + 1;
 		return node;
+	}
+
+	public Set<T> getKeys(){
+		return keySet;
 	}
 }
