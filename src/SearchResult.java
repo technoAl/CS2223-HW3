@@ -15,4 +15,11 @@ public class SearchResult {
 		documentNames.add(doc);
 		termScores.add(term);
 	}
+
+	public void display(){
+		System.out.println("Search Results for " + word + ":");
+		for(int i = 0; i < documentNames.size(); i++){
+			System.out.println(documentNames.get(i) + " " + termScores.get(i));
+		}
+	}
 }

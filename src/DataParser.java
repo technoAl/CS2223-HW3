@@ -5,7 +5,7 @@ import java.util.*;
 public class DataParser {
 	private List<File> fileList;
 	private int numDocs;
-	private List<String> documentNames;
+	public List<String> documentNames;
 	private List<LinearProbingHashST<String, Term>> allDocumentStats;
 	private LinearProbingHashST<String, Term> docFreq;
 
@@ -96,7 +96,8 @@ public class DataParser {
 				break;
 			}
 		}
-		Comparator<Term> minTermComparator = (Term a, Term b) -> (int) (a.TF_IDF_SCORE - b.TF_IDF_SCORE);
+
+		Comparator<Term> minTermComparator = Comparator.comparingDouble((Term a) -> a.TF_IDF_SCORE);
 		PriorityQueue<Term> minPQTop10 = new PriorityQueue<>(minTermComparator);
 
 		LinearProbingHashST<String, Term> desiredDocTable = allDocumentStats.get(docNumber);
