@@ -4,6 +4,8 @@ import java.util.Set;
 public class BST  <T extends Comparable<T>, U>{
 	private Node root;
 	private Set<T> keySet = new HashSet<>(); // Stores a set of all keys ever added to the BST
+	// Node class
+	// N stores number of child nodes
 	private class Node {
 		private T key;
 		private U val;
@@ -20,6 +22,7 @@ public class BST  <T extends Comparable<T>, U>{
 		return size(root);
 	}
 
+	// Root nodes contains full size, otherwise 0
 	private int size(Node node){
 		if(node == null){
 			return 0;
@@ -28,10 +31,12 @@ public class BST  <T extends Comparable<T>, U>{
 		}
 	}
 
+	// Get
 	public U get(T key){
 		return get(root, key);
 	}
 
+	// Start at the root and then move down the sides until the value is found or null
 	private U get(Node node, T key){
 		if(node == null){
 			return null;
@@ -47,11 +52,14 @@ public class BST  <T extends Comparable<T>, U>{
 		}
 	}
 
+	// Add value to tree
+	// Also add key to the key set for use in data parser
 	public void put(T key, U val){
 		keySet.add(key);
 		root =  put(root, key, val);
 	}
 
+	//
 	private Node put(Node node, T key, U val) {
 		if (node == null){
 			return new Node(key, val, 1);
