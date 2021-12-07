@@ -3,7 +3,7 @@ import java.util.Set;
 
 public class BST  <T extends Comparable<T>, U>{
 	private Node root;
-	private Set<T> keySet = new HashSet<>();
+	private Set<T> keySet = new HashSet<>(); // Stores a set of all keys ever added to the BST
 	private class Node {
 		private T key;
 		private U val;

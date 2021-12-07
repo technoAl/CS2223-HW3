@@ -2,13 +2,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+// Very similar to the Data Parser for Hash Table
+// All methods are written the same just replaced w/ BST
 public class DataParserBST {
 	private List<File> fileList;
 	private int numDocs;
-	public java.util.List<String> documentNames;
-
-	private List<BST<String, Term>> allDocumentStatsBST;
-	private BST<String, Term> docFreqBST;
+	public List<String> documentNames;
+	public List<BST<String, Term>> allDocumentStatsBST;
+	public BST<String, Term> docFreqBST;
 
 	public DataParserBST(String pathName) throws FileNotFoundException {
 		fileList = fillFilesToParse(pathName);

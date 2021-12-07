@@ -1,0 +1,7 @@
+To execute the files for this HW. (Only .java files included from original Intellij project)
+1. Open the folder regarding the question to be graded
+2. Keep all the java files in a folder together in the same package (default package works!) (Specicifically applies to Question 5, where each sort is it's own class)
+3. Execute the main of the java Question1.java to see results. 
+4. Originally run with path "./cats/data". The cats folder is in the project folder NOT the source folder.
+5. Feel free to run on other data/change or move the files, just change the path in the code to match
+(Written in Java 11 using Intellij)
