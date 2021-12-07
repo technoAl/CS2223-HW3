@@ -104,8 +104,8 @@ public class Question1 {
 		System.out.format("Search on 1/10th size test set averages %fms over 100 iterations for HashTable.\n", testHashTableSearch(dataParserHashTable, 100));
 		System.out.format("Search on 1/10th size test set averages %fms over 100 iterations for BST.\n",testBSTSearch(dataParserBST, dataParserHashTable, 100));
 
-		System.out.format("Creation averages 2%fms for HashTable.\n", testHashTableCreation(100));
-		System.out.format("Creation averages 2%fms for BST.\n",testBSTCreation(100));
+		System.out.format("Creation averages 2%fms for HashTable over 100 iterations.\n", testHashTableCreation(100));
+		System.out.format("Creation averages 2%fms for BST over 100 iterations.\n",testBSTCreation(100));
 	}
 
 	// Creates a test set with the fraction amount of the whole document frequencies
