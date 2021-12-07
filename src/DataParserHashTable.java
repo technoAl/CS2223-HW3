@@ -32,7 +32,7 @@ public class DataParserHashTable {
 				if(keys[i] == null) continue;
 				String key = (String) keys[i];
 				Term currentStat = currentDocTable.get(key);
-				currentStat.TF = currentStat.frequency;
+				currentStat.TF = Math.log10(1 + currentStat.frequency);
 				currentStat.IDF = Math.log10( (double) numDocs / docFreq.get(key).frequency);
 				currentStat.TF_IDF_SCORE = currentStat.TF * currentStat.IDF; // Using alternate formula:  count-of-word-in-doc * log(numDocs / count-of-docs-containing-word)
 			}
@@ -54,7 +54,7 @@ public class DataParserHashTable {
 		return result;
 	}
 
-	public PriorityQueue<Term> top10(String document){
+	public MinPQ<Term> top10(String document){
 		int docNumber = 0;
 		for(int i = 0; i < documentNames.size(); i++){
 			if(document.equals(documentNames.get(i))){
@@ -63,8 +63,7 @@ public class DataParserHashTable {
 			}
 		}
 
-		Comparator<Term> minTermComparator = Comparator.comparingDouble((Term a) -> a.TF_IDF_SCORE);
-		PriorityQueue<Term> minPQTop10 = new PriorityQueue<>(minTermComparator);
+		MinPQ<Term> minPQTop10 = new MinPQ<>();
 
 		LinearProbingHashST<String, Term> desiredDocTable = allDocumentStats.get(docNumber);
 		Object[] keys = (Object[])desiredDocTable.getKeys();
@@ -73,10 +72,10 @@ public class DataParserHashTable {
 			String key = (String) keys[i];
 			Term currentStat = desiredDocTable.get(key);
 			if(minPQTop10.size() < 10) {
-				minPQTop10.add(currentStat);
-			} else if(minPQTop10.peek().TF_IDF_SCORE < currentStat.TF_IDF_SCORE){
-				minPQTop10.poll();
-				minPQTop10.add(currentStat);
+				minPQTop10.insert(currentStat);
+			} else if(minPQTop10.min().TF_IDF_SCORE < currentStat.TF_IDF_SCORE){
+				minPQTop10.delMin();
+				minPQTop10.insert(currentStat);
 			}
 		}
 		return minPQTop10;

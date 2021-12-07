@@ -7,10 +7,10 @@ public class Question1 {
 	public static void main(String[] args) throws FileNotFoundException {
 		DataParserHashTable dataParserHashTable = new DataParserHashTable("./cats/data");
 
-		PriorityQueue<Term> top10 = dataParserHashTable.top10(dataParserHashTable.documentNames.get(0));
+		MinPQ<Term> top10 = dataParserHashTable.top10(dataParserHashTable.documentNames.get(0));
 		System.out.println("Document: " + dataParserHashTable.documentNames.get(0));
 		while(!top10.isEmpty()){
-			Term term = top10.poll();
+			Term term = top10.delMin();
 			System.out.println(term.word + " " + term.TF_IDF_SCORE);
 		}
 
