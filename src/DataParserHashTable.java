@@ -2,29 +2,23 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class DataParser {
+public class DataParserHashTable {
 	private List<File> fileList;
 	private int numDocs;
 	public List<String> documentNames;
-	private List<LinearProbingHashST<String, Term>> allDocumentStats;
-	private LinearProbingHashST<String, Term> docFreq;
+	public List<LinearProbingHashST<String, Term>> allDocumentStats;
+	public LinearProbingHashST<String, Term> docFreq;
 
 	private List<BST<String, Term>> allDocumentStatsBST;
 	private BST<String, Term> docFreqBST;
 
-	public DataParser(String pathName) throws FileNotFoundException {
+	public DataParserHashTable(String pathName) throws FileNotFoundException {
 		fileList = fillFilesToParse(pathName);
-		numDocs = fileList.size();
 		documentNames = getFileNames(pathName);
+		numDocs = documentNames.size();
 		allDocumentStats = new ArrayList<>();
 		docFreq = new LinearProbingHashST<>();
 		fillScores();
-	}
-
-	public void initBST() throws FileNotFoundException {
-		allDocumentStatsBST = new ArrayList<>();
-		docFreqBST = new BST<>();
-		fillScoresBST();
 	}
 
 	private void fillScores() throws FileNotFoundException {
@@ -38,47 +32,19 @@ public class DataParser {
 				if(keys[i] == null) continue;
 				String key = (String) keys[i];
 				Term currentStat = currentDocTable.get(key);
-				currentStat.TF = Math.log(1 + currentStat.frequency);
-				currentStat.IDF = Math.log( (double) numDocs / docFreq.get(key).frequency);
-				currentStat.TF_IDF_SCORE = currentStat.TF * currentStat.IDF;
-			}
-		}
-	}
-
-	private void fillScoresBST() throws FileNotFoundException {
-		for(File f:fileList){
-			allDocumentStats.add(parseDocument(f));
-		}
-
-		for(BST<String, Term> currentDocTable: allDocumentStatsBST){
-			Set<String> keys = currentDocTable.getKeys();
-			for(String key: keys){
-				Term currentStat = currentDocTable.get(key);
-				currentStat.TF = Math.log(1 + currentStat.frequency);
-				currentStat.IDF = Math.log( (double) numDocs / docFreq.get(key).frequency);
-				currentStat.TF_IDF_SCORE = currentStat.TF * currentStat.IDF;
+				currentStat.TF = currentStat.frequency;
+				currentStat.IDF = Math.log10( (double) numDocs / docFreq.get(key).frequency);
+				currentStat.TF_IDF_SCORE = currentStat.TF * currentStat.IDF; // Using alternate formula:  count-of-word-in-doc * log(numDocs / count-of-docs-containing-word)
 			}
 		}
 	}
 
 	public SearchResult search(String word){
 		SearchResult result = new SearchResult(word);
+		result.word = word;
 
 		for(int i = 0; i < allDocumentStats.size(); i++){
 			LinearProbingHashST<String, Term> currentDocTable = allDocumentStats.get(i);
-			Term currentStat = currentDocTable.get(word);
-			if(currentStat == null){
-				continue;
-			}
-			result.addTerm(documentNames.get(i), currentStat);
-		}
-		return result;
-	}
-
-	public SearchResult searchBST(String word){
-		SearchResult result = new SearchResult(word);
-		for(int i = 0; i < allDocumentStatsBST.size(); i++){
-			BST<String, Term> currentDocTable = allDocumentStatsBST.get(i);
 			Term currentStat = currentDocTable.get(word);
 			if(currentStat == null){
 				continue;
@@ -156,37 +122,6 @@ public class DataParser {
 			}
 		}
 
-		return frequencies;
-	}
-
-	private BST<String, Term> parseDocumentBST(File file) throws FileNotFoundException {
-		BST<String, Term> frequencies = new BST<>();
-		Scanner in = new Scanner(file);
-		while(in.hasNextLine()){
-			String line = in.nextLine();
-			for(String word: line.split("\\s+")){
-				word = word.replaceAll("[^a-zA-Z ]", "");
-				word = word.toLowerCase();
-				if(word.equals("") || word == null){
-					continue;
-				}
-				Term currentStats = frequencies.get(word);
-				if(currentStats != null){
-					currentStats.frequency++;
-					//frequencies.put(word, currentStats);
-				} else {
-					frequencies.put(word, new Term(word, 1));
-				}
-
-				currentStats = docFreqBST.get(word);
-				if(currentStats != null){
-					currentStats.frequency++;
-					//frequencies.put(word, currentStats);
-				} else {
-					docFreqBST.put(word, new Term(word, 1));
-				}
-			}
-		}
 		return frequencies;
 	}
 }
