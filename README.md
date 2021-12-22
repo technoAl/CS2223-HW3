@@ -5,3 +5,5 @@ Creation of a Basic Search Engine using TF-IDF Scoring in documents from the "Ca
 Includes implmentations of a linear probing Hash Table and a Binary Search Tree for Symbols.
 
 Includes Analysis of Hash Table vs. BST for this specific application.
+
+Written in Java 11.
